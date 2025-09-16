@@ -20,7 +20,8 @@ const getUser = async () => {
 }
 
 const loginWithGoogle = () => {
-window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`}
+window.location.href = `https://trippifyb2-production.up.railway.app/auth/google`}
+
 
 const logout = async () => {
   try {
