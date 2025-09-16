@@ -4,7 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 import Swal from "sweetalert2";
 import axios from "axios";
-
+import api from "../../api"; 
 const props = defineProps({
   user: { type: Object, default: null },
 });
@@ -46,12 +46,12 @@ const goToExpense = () => {
 };
 
 const loginWithGoogle = () => {
-  window.location.href = "http://localhost:5000/auth/google";
+ window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
 };
 
 const logout = async () => {
   try {
-    await axios.get("http://localhost:5000/auth/logout", {
+    await await api.get("/auth/logout", {
       withCredentials: true,
     });
     emit("update:user", null);

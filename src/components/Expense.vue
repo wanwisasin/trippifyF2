@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
 import Swal from "sweetalert2";
 import Header from "./Header.vue";
 import { useStore } from "vuex";
+import axios from "axios";
 
 const route = useRoute();
 const router = useRouter();
@@ -18,6 +18,7 @@ const showCategoryModal = ref(false);
 const activeTab = ref("expenses");
 const trip = ref(null);
 const tripId = route.params.tripId;
+
 const selectedDate = ref(new Date().toISOString().split("T")[0]);
 const dateInput = ref(null);
 const selectedCategory = ref("");
@@ -31,10 +32,16 @@ const paidBy = ref("");
 const splitWith = ref([]);
 const editingIndex = ref(null);
 
-const participants = ref([]);
+// ✅ ใช้ baseURL จาก .env
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
+});
 
+const participants = ref([]);
 const currentUserEmail = ref("");
 paidBy.value = currentUserEmail.value;
+
 const tripLeader = computed(() => {
   return participants.value.find(p => p.role === "leader")?.gmail || "";
 });
@@ -43,9 +50,7 @@ const expenses = ref([]);
 // ---------------- User ----------------
 const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/auth/user", {
-      withCredentials: true,
-    });
+    const res = await api.get("/auth/user");
     user.value = res.data;
     console.log("User data:", user.value);
   } catch (err) {
@@ -57,24 +62,22 @@ const getUser = async () => {
 const loadExpenses = async () => {
   if (!tripId) return;
   try {
-    const res = await axios.get(`http://localhost:5000/api/expense/${tripId}`, {
-      withCredentials: true,
-    });
+    const res = await api.get(`/api/expense/${tripId}`);
     expenses.value = res.data.map(e => ({
       ...e,
       amount: parseFloat(e.amount) || 0,
-      isPaid: e.isPaid === 1 || e.isPaid === '1' || e.isPaid === true || e.isPaid === 'true',
+      isPaid: e.isPaid == 1 || e.isPaid === true || e.isPaid === "1" || e.isPaid === "true",
       splitWith: Array.isArray(e.splitWith) ? e.splitWith : JSON.parse(e.splitWith || "[]")
     }));
   } catch (err) {
     console.error("Error loading expenses:", err);
   }
 };
+
+// ---------------- Load Trip ----------------
 const loadTrip = async () => {
   try {
-    const res = await axios.get(`http://localhost:5000/api/trip/${tripId}`, {
-      withCredentials: true,
-    });
+    const res = await api.get(`/api/trip/${tripId}`);
     trip.value = res.data;
     participants.value = trip.value.members || [];
     currentUserEmail.value = store.state.user?.gmail || "";
@@ -83,6 +86,7 @@ const loadTrip = async () => {
     console.error(err);
   }
 };
+
 // ---------------- Save Expense ----------------
 const saveExpense = async () => {
   const newExpense = {
@@ -99,13 +103,9 @@ const saveExpense = async () => {
   try {
     if (editingIndex.value !== null) {
       const expenseId = expenses.value[editingIndex.value].expense_id;
-      await axios.put(`http://localhost:5000/api/expense/${expenseId}`, newExpense, {
-        withCredentials: true,
-      });
+      await api.put(`/api/expense/${expenseId}`, newExpense);
     } else {
-      await axios.post(`http://localhost:5000/api/expense/${tripId}`, newExpense, {
-        withCredentials: true,
-      });
+      await api.post(`/api/expense/${tripId}`, newExpense);
     }
 
     await loadExpenses();
@@ -139,9 +139,7 @@ const deleteExpense = async (index) => {
 
   if (confirm.isConfirmed) {
     try {
-      await axios.delete(`http://localhost:5000/api/expense/${expenseId}`, {
-        withCredentials: true,
-      });
+      await api.delete(`/api/expense/${expenseId}`);
       await loadExpenses();
       Swal.fire("Deleted!", "Your expense has been removed.", "success");
     } catch (err) {
@@ -164,19 +162,6 @@ const editExpense = (index) => {
   editingIndex.value = index;
   showExpenseModal.value = true;
 };
-
-// ---------------- Reset Form ----------------
-const resetForm = () => {
-  amount.value = "";
-  selectedCategory.value = "";
-  note.value = "";
-  isPaid.value = false;
-  selectedCurrency.value = "THB";
-  paidBy.value = currentUserEmail.value;
-  splitWith.value = [];
-  editingIndex.value = null;
-};
-
 // ---------------- Computed ----------------
 const totalCost = computed(() => expenses.value.reduce((sum, e) => sum + (e.amount || 0), 0));
 const pendingCost = computed(() => expenses.value.filter(e => !e.isPaid).reduce((sum, e) => sum + (e.amount || 0), 0));
@@ -225,6 +210,18 @@ const getCategoryIcon = (category) => {
   }
 };
 const getParticipantName = (gmail) => participants.value.find(p => p.gmail === gmail)?.username || gmail;
+
+// ---------------- Reset Form ----------------
+const resetForm = () => {
+  amount.value = "";
+  selectedCategory.value = "";
+  note.value = "";
+  isPaid.value = false;
+  selectedCurrency.value = "THB";
+  paidBy.value = currentUserEmail.value;
+  splitWith.value = [];
+  editingIndex.value = null;
+};
 
 // ---------------- Lifecycle ----------------
 onMounted(() => {

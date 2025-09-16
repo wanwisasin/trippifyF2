@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import { useRouter } from 'vue-router'
-
+import api from '../../api'
 const router = useRouter()
 const showLoginModal = ref(false)
 const user = ref(null)
@@ -11,9 +11,7 @@ const isLoading = ref(false)
 
 const getUser = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/auth/user', {
-      withCredentials: true
-    })
+    const res = await api.get('/auth/user')
     user.value = res.data
     console.log('User data:', user.value)
   } catch (err) {
@@ -22,14 +20,11 @@ const getUser = async () => {
 }
 
 const loginWithGoogle = () => {
-  window.location.href = 'http://localhost:5000/auth/google'
-}
+window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`}
 
 const logout = async () => {
   try {
-    await axios.get('http://localhost:5000/auth/logout', {
-      withCredentials: true
-    })
+   await api.get('/auth/logout')
     user.value = null
     showLoginModal.value = false // ปิด modal ทันที
 

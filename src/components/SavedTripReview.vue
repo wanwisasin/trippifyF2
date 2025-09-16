@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
 import Header from "./Header.vue";
-
+import api from "../../api";
 // ✅ ใช้โค้ดเดียวกับ SavedTrips.vue ได้เลย
 const savedTrips = ref([]);
 const router = useRouter();
@@ -16,9 +16,7 @@ const joinLinkInput = ref("");
 
 const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/auth/user", {
-      withCredentials: true,
-    });
+    const res = await api.get("/auth/user")
     user.value = res.data;
   } catch (err) {
     user.value = null;
@@ -27,9 +25,7 @@ const getUser = async () => {
 
 const fetchSavedTrips = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/api/trip/mine", {
-      withCredentials: true,
-    });
+    const res = await api.get("/api/trip/mine")
     savedTrips.value = res.data;
   } catch (err) {
     console.error("Failed to fetch saved trips:", err);

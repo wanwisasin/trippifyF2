@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Header from "./Header.vue";
 import draggable from "vuedraggable";
-
+import api from "../../api";
 const route = useRoute();
 const user = ref(null);
 const tripId = route.params.tripId;
@@ -26,23 +26,23 @@ const hoverRating = ref(0);
 const expandedDays = ref({}); // เก็บสถานะ dropdown ของแต่ละ day
 const allExpanded = ref(false); // สถานะ Expand/Collapse All
 
+
 const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/auth/user", {
-      withCredentials: true,
-    });
-    user.value = res.data;
+    const res = await api.get('/auth/user', {
+      withCredentials: true
+    })
+    user.value = res.data
+    console.log('User data:', user.value)
   } catch (err) {
-    user.value = null;
+    user.value = null
   }
-};
+}
 
 // โหลดแผนทริปจาก backend ได้ตามปกติ
 const fetchTripPlan = async () => {
   try {
-    const res = await axios.get(`http://localhost:5000/api/trip/${tripId}`, {
-      withCredentials: true,
-    });
+   const res = await api.get(`/api/trip/${tripId}`);
     tripPlan.value = res.data;
   } catch (err) {
     error.value = err.response?.data?.message || "ไม่สามารถโหลดทริปได้";
@@ -50,7 +50,7 @@ const fetchTripPlan = async () => {
 };
 const fetchReviews = async () => {
   try {
-    const res = await axios.get(`http://localhost:5000/api/reviews/${tripId}`);
+    const res = await api.get(`/api/reviews/${tripId}`);
     reviews.value = res.data;
   } catch (err) {
     console.error("โหลดรีวิวล้มเหลว:", err);
@@ -103,8 +103,8 @@ const submitReview = async () => {
   submitting.value = true;
 
   try {
-    const res = await axios.post(
-      `http://localhost:5000/api/reviews/${tripId}`,
+    const res = await api.post(
+      `/api/reviews/${tripId}`,
       {
         user_name: newReviewName.value || "Anonymous User",
         rating: newReviewRating.value,

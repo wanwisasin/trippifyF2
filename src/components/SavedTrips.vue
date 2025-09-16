@@ -4,19 +4,16 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
 import Header from "./Header.vue";
-// import MiniMap from './MiniMap.vue'
+import api from "../../api";
 const savedTrips = ref([]);
 const router = useRouter();
 const showLoginModal = ref(false);
 const user = ref(null);
 const joinTripLinkModal = ref(false);
 const joinLinkInput = ref("");
-
 const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/auth/user", {
-      withCredentials: true,
-    });
+    const res = await api.get("/auth/user");
     user.value = res.data;
   } catch (err) {
     user.value = null;
@@ -25,9 +22,7 @@ const getUser = async () => {
 
 const fetchSavedTrips = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/api/trip/mine", {
-      withCredentials: true,
-    });
+    const res = await api.get("/api/trip/mine")
     console.log("Fetched trips:", res.data); // 🔍 debug
     savedTrips.value = Array.isArray(res.data) ? res.data : [];
   } catch (err) {
@@ -42,14 +37,11 @@ onMounted(async () => {
 });
 
 const loginWithGoogle = () => {
-  window.location.href = "http://localhost:5000/auth/google";
-};
+window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`};
 
 const logout = async () => {
   try {
-    await axios.get("http://localhost:5000/auth/logout", {
-      withCredentials: true,
-    });
+    await api.get('/auth/logout');
     user.value = null;
     showLoginModal.value = false;
     await Swal.fire({

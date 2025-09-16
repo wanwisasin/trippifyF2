@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { useRoute } from "vue-router";
 import { ref } from "vue";
 import Header from "./Header.vue";
-
+import api from "../../api";
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
@@ -65,9 +65,7 @@ const activeTab = ref("plan");
 
 const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/auth/user", {
-      withCredentials: true,
-    });
+    const res = await api.get("/auth/user");
     user.value = res.data;
   } catch (err) {
     user.value = null;
@@ -87,8 +85,8 @@ const saveTrip = async () => {
 
     console.log("Saving trip with ID:", payload.tripId || "(new trip)");
 
-    const response = await axios.post(
-      "http://localhost:5000/api/trip/saveOrUpdate",
+    const response = await api.post(
+      "/api/trip/saveOrUpdate",
       payload,
       { withCredentials: true }
     );
@@ -245,11 +243,11 @@ const searchPlaces = async () => {
   if (!searchQuery.value.trim()) return;
   loadingSearch.value = true;
   try {
-    const { data } = await axios.get(
-      "http://localhost:5000/api/places/search",
+    const { data } = await api.get(
+      "/api/places/search",
       {
         params: { query: searchQuery.value },
-        withCredentials: true,
+       
       }
     );
     searchResults.value = data.places || [];
@@ -275,7 +273,7 @@ const fetchNearby = async (lat, lng, type = "cafe") => {
   if (!lat || !lng) return;
   loadingNearby.value = true;
   try {
-    const res = await axios.get("http://localhost:5000/api/places/nearby", {
+    const res = await api.get("/api/places/nearby", {
       params: { lat, lng, type, radius: 1000 },
     });
 

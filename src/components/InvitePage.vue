@@ -9,7 +9,7 @@ const loginWithGoogle = () => {
     ? `/trip/${route.params.tripId}`
     : "/";
 
-  window.location.href = `http://localhost:5000/auth/google?redirect=http://localhost:5173${tripPath}`;
+window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google?redirect=https://trippify-f2.vercel.app${tripPath}`;
 };
 </script>
 

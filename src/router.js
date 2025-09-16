@@ -9,8 +9,7 @@ import Expense from './components/Expense.vue'
 import InvitePage from './components/InvitePage.vue'
 import Review from './components/Review.vue'
 import SavedTripReview from './components/SavedTripReview.vue'
-import axios from 'axios'
-
+import api from '../api'
 const routes = [
   { path: '/', component: Home },
   { path: '/planner', component: Planner },
@@ -42,9 +41,8 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.path.startsWith('/trip/')) {
     try {
-      const res = await axios.get('http://localhost:5000/auth/user', {
-        withCredentials: true,
-      })
+      const res = await api.get('/auth/user')
+
       if (res.data) {
         next()
       } else {

@@ -6,7 +6,7 @@ import { useStore } from "vuex";
 import { thaiProvinces } from "../assets/provinces";
 import Swal from "sweetalert2";
 import Header from "./Header.vue";
-
+import api from "../../api";
 const store = useStore();
 const router = useRouter();
 const user = ref(null);
@@ -51,7 +51,7 @@ const submitTrip = async () => {
 
   try {
     isLoading.value = true;
-    const res = await axios.post("http://localhost:5000/api/trip", payload);
+const res = await api.post("/api/trip", payload);
     store.commit("trip/setTripPlan", res.data);
     setTimeout(() => router.push("/tripdetail"), 500);
   } catch (err) {
@@ -67,15 +67,15 @@ const submitTrip = async () => {
   }
 };
 
+
 const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/auth/user", { withCredentials: true });
-    user.value = res.data;
-  } catch {
-    user.value = null;
+    const res = await api.get('/auth/user')
+    user.value = res.data
+  } catch (err) {
+    user.value = null
   }
-};
-
+}
 const validateForm = () => {
   if (!tripName.value || !from.value || !to.value || !startDate.value || !endDate.value || !budget.value || !trip_type.value) {
     Swal.fire({
