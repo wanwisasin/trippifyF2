@@ -1,6 +1,6 @@
 // src/store/trip.js
 import axios from "axios";
-
+import api from "../../api";
 export default {
   namespaced: true,
   state: () => ({
@@ -21,7 +21,7 @@ mutations: {
   actions: {
     async fetchTripPlan({ commit }, tripId) {
       try {
-        const res = await axios.get(`/api/trip/${tripId}`, { withCredentials: true });
+        const res = await api.get(`/api/trip/${tripId}`, { withCredentials: true });
         commit("setTripPlan", res.data); 
       } catch (err) {
         console.error("Error fetching trip plan:", err);

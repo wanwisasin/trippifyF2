@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import api from '../../api'
 export default {
   namespaced: true,
   state: () => ({
@@ -23,9 +23,8 @@ export default {
 
     async fetchUser({ commit }) {
       try {
-        const res = await axios.get(
-          'http://localhost:5000/auth/user',
-          { withCredentials: true }
+        const res = await api.get(
+          '/auth/user'
         )
         commit('setUser', res.data)
       } catch (e) {
