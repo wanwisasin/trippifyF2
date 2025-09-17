@@ -10,6 +10,7 @@ import InvitePage from './components/InvitePage.vue'
 import Review from './components/Review.vue'
 import SavedTripReview from './components/SavedTripReview.vue'
 import api from '../api'
+import axios from 'axios'
 const routes = [
   { path: '/', component: Home },
   { path: '/planner', component: Planner },
@@ -41,7 +42,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.path.startsWith('/trip/')) {
     try {
-      const res = await api.get('/auth/user')
+      const res = await axios.get('https://trippifyb2-production.up.railway.app/auth/user')
 
       if (res.data) {
         next()

@@ -11,7 +11,7 @@ const isLoading = ref(false)
 
 const getUser = async () => {
   try {
-    const res = await api.get('/auth/user')
+    const res = await axios.get('https://trippifyb2-production.up.railway.app/auth/user')
     user.value = res.data
     console.log('User data:', user.value)
   } catch (err) {

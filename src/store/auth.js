@@ -23,8 +23,8 @@ export default {
 
     async fetchUser({ commit }) {
       try {
-        const res = await api.get(
-          '/auth/user'
+        const res = await axios.get(
+          'https://trippifyb2-production.up.railway.app/auth/user'
         )
         commit('setUser', res.data)
       } catch (e) {

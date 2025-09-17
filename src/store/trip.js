@@ -21,7 +21,7 @@ mutations: {
   actions: {
     async fetchTripPlan({ commit }, tripId) {
       try {
-        const res = await api.get(`/api/trip/${tripId}`, { withCredentials: true });
+        const res = await axios.get(`https://trippifyb2-production.up.railway.app/api/trip/${tripId}`, { withCredentials: true });
         commit("setTripPlan", res.data); 
       } catch (err) {
         console.error("Error fetching trip plan:", err);
